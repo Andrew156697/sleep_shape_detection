@@ -11,9 +11,9 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %
 
 # Config kết nối InfluxDB
 bucket = "test1"
-token = "lAylyIEo7Xjub7kr2I0GV5kr3I03JkDK5VghmVz3vMwFWOdarMvT_sXtb7MGyFfeTa9jPXDdDvOV8rD7UhmNsg=="
-org = "97a897b1d7c9ba9d"
-url = "http://192.168.100.42:8086"
+token = "RV_G0qv6j_IuGbL_ITsG_mRkWZZz6dFIqFI76XExtftLAOIKh1AOqgsKMj1vhWxr2czFf-svcFjTm_pdz6vSSA=="
+org = "59f6f678313bf9b1"
+url = "https://us-east-1-1.aws.cloud2.influxdata.com"
 
 try:
     client = InfluxDBClient(url=url, token=token, org=org)
@@ -75,7 +75,7 @@ try:
                 # print("day la point: \n")
                 # print(point)
 
-        sleep(7)
+        sleep(3)
 except Exception as e:
     logging.error(f"Lỗi xảy ra: {e}")
 finally:
