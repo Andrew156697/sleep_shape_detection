@@ -109,10 +109,23 @@ def load_options(file_path):
 def main():
     options_path = "/data/options.json"  # Đường dẫn đến tệp options.json
     options = load_options(options_path)
-    camera_id = int(options.get("mycamera"))
+
+    camera_id = options.get("mycamera")
+    if camera_id is None:
+        logger.error("Key 'mycamera' is missing in options.json")
+        return
+
+    try:
+        camera_id = int(camera_id)
+    except ValueError:
+        logger.error(f"Invalid value for 'mycamera': {camera_id}")
+        return
+
+    logger.info(f"Using camera ID: {camera_id}")
     print(type(camera_id))
-    print("this is camera id: ",camera_id)
-    # open_camera(0)
+    print("This is camera ID:", camera_id)
+    # open_camera(camera_id)
+
 
 
 
