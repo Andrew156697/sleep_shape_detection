@@ -107,12 +107,12 @@ def open_camera(camera_id):
 
 
 def main():
-    options_path = "/data/options.json"  # Đường dẫn đến tệp options.json
+    options_path = "data/options.json"  # Đường dẫn đến tệp options.json
     options = load_options(options_path)
     camera_id = int(options.get("mycamera"))
     # print(type(int(camera_id)))
     print("this is camera id: ",camera_id)
-    open_camera(camera_id)
+    open_camera(0)
 
 
 
