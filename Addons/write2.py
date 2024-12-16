@@ -7,7 +7,8 @@ from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 # Cấu hình logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG)
 
 # Config kết nối InfluxDB
 bucket = "test1"
@@ -57,21 +58,21 @@ try:
 
             for idx, landmark in enumerate(results.pose_landmarks.landmark):
                 x, y, z, visibility = landmark.x, landmark.y, landmark.z, landmark.visibility  # Tọa độ chuẩn hóa
-                logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f}")
+                logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f} visibility={visibility:3f}")
 
                 # Tạo dữ liệu Point cho từng landmark
-                point = Point("points") \
-                    .field(f"x{idx}", x) \
-                    .field(f"y{idx}", y) \
-                    .field(f"z{idx}", z) \
-                    .field(f"visibility{idx}", visibility) \
-                    .time(time=None, write_precision=WritePrecision.NS)
+                # point = Point("points") \
+                #     .field(f"x{idx}", x) \
+                #     .field(f"y{idx}", y) \
+                #     .field(f"z{idx}", z) \
+                #     .field(f"visibility{idx}", visibility) \
+                #     .time(time=None, write_precision=WritePrecision.NS)
                 
-                if client:
-                    try:
-                        write_api.write(bucket=bucket, org=org, record=point)
-                    except Exception as e:
-                        logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
+                # if client:
+                #     try:
+                #         write_api.write(bucket=bucket, org=org, record=point)
+                #     except Exception as e:
+                #         logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
                 
                 # print("day la point: \n")
                 # print(point)
