@@ -56,7 +56,7 @@ try:
             logging.info("Connected! Landmarks detected.")
 
             for idx, landmark in enumerate(results.pose_landmarks.landmark):
-                x, y, z = landmark.x, landmark.y, landmark.z  # Tọa độ chuẩn hóa
+                x, y, z, visibility = landmark.x, landmark.y, landmark.z, landmark.visibility  # Tọa độ chuẩn hóa
                 logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f}")
 
                 # Tạo dữ liệu Point cho từng landmark
@@ -64,6 +64,7 @@ try:
                     .field(f"x{idx}", x) \
                     .field(f"y{idx}", y) \
                     .field(f"z{idx}", z) \
+                    .field(f"visibility{idx}", visibility) \
                     .time(time=None, write_precision=WritePrecision.NS)
                 
                 if client:
@@ -75,7 +76,7 @@ try:
                 # print("day la point: \n")
                 # print(point)
 
-        sleep(3)
+        sleep(1)
 except Exception as e:
     logging.error(f"Lỗi xảy ra: {e}")
 finally:
