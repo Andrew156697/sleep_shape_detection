@@ -10,10 +10,10 @@ from influxdb_client.client.write_api import SYNCHRONOUS
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Config kết nối InfluxDB
-bucket = "test2"
-token = "f8bXUcj_hlnb_Ey_KFH45D5T1Ln2AWF-WSniwGVwYpDHWuY7Gm_CaJwB_zJNFgsxUY6qiad40bnioWOAOGzQ7g=="
-org = "chtlab"
-url = "http://shapepose.local:8086"
+bucket = "test1"
+token = "lAylyIEo7Xjub7kr2I0GV5kr3I03JkDK5VghmVz3vMwFWOdarMvT_sXtb7MGyFfeTa9jPXDdDvOV8rD7UhmNsg=="
+org = "97a897b1d7c9ba9d"
+url = "http://192.168.100.42:8086"
 
 try:
     client = InfluxDBClient(url=url, token=token, org=org)
