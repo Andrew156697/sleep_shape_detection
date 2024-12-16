@@ -110,7 +110,7 @@ def main():
     options_path = "/data/options.json"  # Đường dẫn đến tệp options.json
     options = load_options(options_path)
 
-    camera_id = options.get("mycamera")
+    camera_id = options.get("my_camera")
     if camera_id is None:
         logger.error("Key 'mycamera' is missing in options.json")
         return
