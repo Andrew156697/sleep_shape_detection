@@ -1,120 +1,79 @@
-import json
+from flask import Flask, Response
 import cv2
-import logging
-import os
-from time import sleep
+import time
 import mediapipe as mp
-from influxdb_client import InfluxDBClient, Point, WritePrecision
-from influxdb_client.client.write_api import SYNCHRONOUS
 
-
-#----------------------configuration---------------- 
-
-
-# Tắt TF_DELEGATE_OPTIONS nếu không cần thiết
-os.environ["TF_DELEGATE_OPTIONS"] = "0"
-
-# Thiết lập logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-# Config kết nối InfluxDB
-bucket = "test1"
-token = "lAylyIEo7Xjub7kr2I0GV5kr3I03JkDK5VghmVz3vMwFWOdarMvT_sXtb7MGyFfeTa9jPXDdDvOV8rD7UhmNsg=="
-org = "97a897b1d7c9ba9d"
-url = "http://192.168.100.42:8086"
-
-# Tắt TF_DELEGATE_OPTIONS nếu không cần thiết
-os.environ["TF_DELEGATE_OPTIONS"] = "0"
-
-# Khởi tạo MediaPipe Pose
+# Initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
+mp_drawing = mp.solutions.drawing_utils
 
+# Initialize Flask app
+app = Flask(__name__)
 
-#----------------------------Function------------
+# Initialize the camera
+camera = cv2.VideoCapture(0)
 
+def generate_frames():
+    frame_count = 0
+    start_time = time.time()
 
-def load_options(file_path):
-    try:
-        with open(file_path, "r") as file:
-            return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logger.error(f"Error loading options: {e}")
-        return {}
-    
-def open_camera(camera_id):
-    try:
-        client = InfluxDBClient(url=url, token=token, org=org)
-        write_api = client.write_api(write_options=SYNCHRONOUS)
-    except Exception as e:
-        logging.error(f"Lỗi kết nối InfluxDB: {e}")
-        client = None
-
-    camera = cv2.VideoCapture(camera_id)
-    if not camera.isOpened():
-        logging.error("Không thể mở camera.")
-        exit()
-    else:
-        logging.info("Camera đã sẵn sàng.")
-
-    try:
-        while True:
-            success, frame = camera.read()
-            if not success:
-                logging.error("Không thể lấy frame từ camera.")
-                break
-
-            # Đổi sang không gian màu RGB
+    while True:
+        # Read a frame from the camera
+        success, frame = camera.read()
+        if not success:
+            break
+        else:
+            # Convert the frame to RGB for MediaPipe processing
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # Dự đoán pose landmarks
+            # Process the frame to detect poses
             results = pose.process(rgb_frame)
 
-            # Xử lý kết quả
+            # Draw the pose landmarks on the frame and extract coordinates
             if results.pose_landmarks:
-                logging.info("Connected! Landmarks detected.")
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
+                # Extract and print coordinates of 32 landmarks
                 for idx, landmark in enumerate(results.pose_landmarks.landmark):
-                    x, y, z = landmark.x, landmark.y, landmark.z  # Tọa độ chuẩn hóa
-                    logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f}")
+                    x = landmark.x  # Normalized x-coordinate
+                    y = landmark.y  # Normalized y-coordinate
+                    z = landmark.z  # Depth
+                    visibility = landmark.visibility  # Visibility score
+                    print(f"Landmark {idx}: x={x:.2f}, y={y:.2f}, z={z:.2f}, visibility={visibility:.2f}")
 
-                    # Tạo dữ liệu Point cho từng landmark
-                    point = Point("points") \
-                        .field(f"x{idx}", x) \
-                        .field(f"y{idx}", y) \
-                        .field(f"z{idx}", z) \
-                        .time(time=None, write_precision=WritePrecision.NS)
-                    
-                    if client:
-                        try:
-                            write_api.write(bucket=bucket, org=org, record=point)
-                        except Exception as e:
-                            logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
-                    
-                    # print("day la point: \n")
-                    # print(point)
+            # Increment frame count
+            frame_count += 1
 
-            sleep(7)
-    except Exception as e:
-        logging.error(f"Lỗi xảy ra: {e}")
-    finally:
-        camera.release()
-        if client:
-            client.close()
-        logging.info("Camera và kết nối InfluxDB đã được giải phóng.")
+            # Calculate FPS
+            elapsed_time = time.time() - start_time
+            if elapsed_time > 1:  # Update FPS every second
+                fps = int(frame_count / elapsed_time)
+                frame_count = 0
+                start_time = time.time()
 
+                # Put FPS text on the frame
+                cv2.putText(frame, f'FPS: {fps}', (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
+            # Encode the frame in JPEG format
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
 
-def main():
-    options_path = "/data/options.json"  # Đường dẫn đến tệp options.json
-    options = load_options(options_path)
-    camera_id = int(options.get("mycamera"))
-    # print(type(int(camera_id)))
-    print("this is camera id: ",camera_id)
-    open_camera(0)
+            # Yield the frame in the correct format for streaming
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
+@app.route('/')
+def index():
+    return '''
+    <h1>BlazePose with Flask</h1>
+    <p>Visit <a href="/video_feed">/video_feed</a> to see the camera stream with pose detection.</p>
+    <img src="/video_feed" width="1720" height="880">
+    '''
 
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", port=8000)
