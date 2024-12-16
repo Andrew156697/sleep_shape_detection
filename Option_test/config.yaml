@@ -1,7 +1,7 @@
 
 name: "Selection"
 description: "Test select options"
-version: "1.0.2"
+version: "1.0.3"
 slug: "test"
 init: false
 arch:
