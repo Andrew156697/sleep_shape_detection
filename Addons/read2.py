@@ -3,21 +3,18 @@ import pandas as pd
 
 # Chi tiết kết nối
 bucket = "test1"
-token = "f1hPnzVwo3elefsiIlXM4_yRwme12_C9sD9rRxZroeihZcBbpB03W0_dnyQB0AS3Mgw6qySUS6m4V6WEA_Kvpw=="
-org = "chtlab"
-url = "http://192.168.137.214:8086"  # Đảm bảo URL bao gồm giao thức (http://)
+token = "RV_G0qv6j_IuGbL_ITsG_mRkWZZz6dFIqFI76XExtftLAOIKh1AOqgsKMj1vhWxr2czFf-svcFjTm_pdz6vSSA=="
+org = "59f6f678313bf9b1"
+url = "https://us-east-1-1.aws.cloud2.influxdata.com"
+
 client = InfluxDBClient(url=url, token=token, org=org)
 
 query_api = client.query_api()
 
-# Xác định phạm vi thời gian cho truy vấn
-start_time = "2024-12-15T19:33:30Z"  # Thay thế bằng thời gian bắt đầu của bạn
-stop_time = "2024-12-15T19:34:50Z"   # Thay thế bằng thời gian dừng của bạn
-
 # Tạo truy vấn
 query = f'''
 from(bucket: "{bucket}")
-  |> range(start: -50m)\
+  |> range(start: -4h)\
   |> filter(fn: (r) => r["_measurement"] == "points")\
 '''
 

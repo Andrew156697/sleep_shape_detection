@@ -1,3 +1,8 @@
 {
-    "mycamera": "0"
+  "my_camera": "0",
+  "my_bucket" : "test2",
+  "my_token" : "fCtJij8tgs27OpTf9ZiJDiu7EtPxwRthAvfHDIxqLoA4wsL0873Rq2y8N-Y2cyvtcM9KFdYQb2zrLrcK9H1mGA==",
+  "my_org" : "97a897b1d7c9ba9d",
+  "my_url" : "http://192.168.100.42:8086/",
+  "my_duration": "1"
   }

@@ -6,6 +6,7 @@ from time import sleep
 import mediapipe as mp
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
+from datetime import datetime
 
 
 #----------------------configuration---------------- 
@@ -43,7 +44,7 @@ def load_options(file_path):
         logger.error(f"Error loading options: {e}")
         return {}
     
-def open_camera(camera_id, url, token, org, bucket):
+def open_camera(camera_id, url, token, org, bucket,duration):
     try:
         client = InfluxDBClient(url=url, token=token, org=org)
         write_api = client.write_api(write_options=SYNCHRONOUS)
@@ -70,7 +71,8 @@ def open_camera(camera_id, url, token, org, bucket):
 
             # Dự đoán pose landmarks
             results = pose.process(rgb_frame)
-
+            now = datetime.now()
+            # time_wrtire = now.strftime('%Y%m%d%H%M%S')
             # Xử lý kết quả
             if results.pose_landmarks:
                 logging.info("Connected! Landmarks detected.")
@@ -80,12 +82,13 @@ def open_camera(camera_id, url, token, org, bucket):
                     logging.info(f"Landmark {idx}: x ={x:.3f}, y={y:.3f}, z={z:.3f}, visibility={visibility:3f}")
 
                     # Tạo dữ liệu Point cho từng landmark
-                    point = Point("points") \
+                    point = Point(f"{idx}") \
                         .field(f"x{idx}", x) \
                         .field(f"y{idx}", y) \
                         .field(f"z{idx}", z) \
-                        .field(f"visibility{idx}", visibility) \
-                        .time(time=None, write_precision=WritePrecision.NS)
+                        .field(f"visibility{idx}", visibility) 
+                        # .field(f"timewrtire{idx}", time_wrtire) 
+                        # .time(time=None, write_precision=WritePrecision.NS)
                     
                     if client:
                         try:
@@ -93,10 +96,9 @@ def open_camera(camera_id, url, token, org, bucket):
                         except Exception as e:
                             logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
                     
-                    # print("day la point: \n")
-                    # print(point)
-
-            sleep(2)
+                
+            duration = duration * 60
+            sleep(duration)
     except Exception as e:
         logging.error(f"Lỗi xảy ra: {e}")
     finally:
@@ -115,10 +117,21 @@ def main():
     token = options.get("my_token")
     org = options.get("my_org")
     url = options.get("my_url")
-
+    duration = options.get("my_duration")
     camera_id = options.get("my_camera")
+
+    if duration is None:
+        logger.error("Key 'my_duration' is missing in options.json")
+        return
+
+    try:
+        duration = int(duration)
+    except ValueError:
+        logger.error(f"Invalid value for 'my_duration': {duration}")
+        return
+    
     if camera_id is None:
-        logger.error("Key 'mycamera' is missing in options.json")
+        logger.error("Key 'my_camera' is missing in options.json")
         return
 
     try:
@@ -130,7 +143,7 @@ def main():
     logger.info(f"Using camera ID: {camera_id}")
     print(type(camera_id))
     print("This is camera ID:", camera_id)
-    open_camera(camera_id,url=url,token=token,org=org,bucket=bucket)
+    open_camera(camera_id,url=url,token=token,org=org,bucket=bucket,duration=duration)
 
 
 if __name__ == "__main__":
