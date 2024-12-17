@@ -1,8 +1,8 @@
 
-name: "Selection1"
-description: "Test select options1"
+name: "Sleeping Position"
+description: "Sleeping Position"
 version: "1.0.9"
-slug: "test1"
+slug: "sleeping_position"
 init: false
 arch:
   - aarch64
