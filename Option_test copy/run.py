@@ -96,8 +96,6 @@ def open_camera(camera_id, url, token, org, bucket,duration):
                         except Exception as e:
                             logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
                     
-                
-            duration = duration * 60
             sleep(duration)
     except Exception as e:
         logging.error(f"Lỗi xảy ra: {e}")
