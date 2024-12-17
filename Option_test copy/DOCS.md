@@ -38,6 +38,6 @@ Once configured, the add-on will:
 
 ## Support
 
-For issues or feature requests, please create an issue in the [repository](andrew@chtlab.io).
+For issues or feature requests, please create an issue in the [repository](https://github.com/nott-smartbed/sleep_shape_detection.git).
 
 Enjoy better sleep with actionable insights! 💤
