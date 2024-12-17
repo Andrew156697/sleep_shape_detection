@@ -1,7 +1,7 @@
 
 name: "Sleeping Position"
 description: "Sleeping Position"
-version: "1.0.9"
+version: "1.0.10"
 slug: "sleeping_position"
 init: false
 arch:
