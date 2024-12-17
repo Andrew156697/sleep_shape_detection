@@ -1,7 +1,7 @@
 
 name: "Selection1"
 description: "Test select options1"
-version: "1.0.6"
+version: "1.0.7"
 slug: "test1"
 init: false
 arch:
@@ -11,12 +11,37 @@ arch:
   - armv7
   - i386
 
+
 options:
   my_camera: none
-  my_boolean: none
+  my_token: 
+    description: "Your Tocken"
+    type: str
+    required: true
+    example: "RV_G0qv6j_IuGbL_ITsG_mRkWZZz6dFIqFI76XExtftLAOIKh1AOqgsKMj1vhWxr2czFf"
+  my_bucket: 
+    description: "Your Bucket name"
+    type: str
+    required: true
+    example: "test1"
+  my_org: 
+    description: "Your org"
+    type: str
+    required: true
+    example: "59f6f678313bf9b1"
+  my_url:
+    description: "Your URL"
+    type: str
+    required: true
+    example: "https://us-east-1-1.aws.cloud2.influxdata.com"
+
 schema:
   my_camera: list(0|1|2|3|4|5|6|7|8|9|10)
-  my_boolean: list(false|true)
+  my_token: str
+  my_bucket: str
+  my_org: str
+  my_url: str
+
 
 devices:
   - "/dev/video0:/dev/video0:rwm"

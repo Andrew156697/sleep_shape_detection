@@ -61,18 +61,18 @@ try:
                 logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f} visibility={visibility:3f}")
 
                 # Tạo dữ liệu Point cho từng landmark
-                # point = Point("points") \
-                #     .field(f"x{idx}", x) \
-                #     .field(f"y{idx}", y) \
-                #     .field(f"z{idx}", z) \
-                #     .field(f"visibility{idx}", visibility) \
-                #     .time(time=None, write_precision=WritePrecision.NS)
+                point = Point("points") \
+                    .field(f"x{idx}", x) \
+                    .field(f"y{idx}", y) \
+                    .field(f"z{idx}", z) \
+                    .field(f"visibility{idx}", visibility) \
+                    .time(time=None, write_precision=WritePrecision.NS)
                 
                 # if client:
-                #     try:
-                #         write_api.write(bucket=bucket, org=org, record=point)
-                #     except Exception as e:
-                #         logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
+                try:
+                    write_api.write(bucket=bucket, org=org, record=point)
+                except Exception as e:
+                    logging.error(f"Lỗi khi ghi vào InfluxDB: {e}")
                 
                 # print("day la point: \n")
                 # print(point)

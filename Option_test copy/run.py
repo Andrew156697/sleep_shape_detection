@@ -19,10 +19,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Config kết nối InfluxDB
-bucket = "test1"
-token = "lAylyIEo7Xjub7kr2I0GV5kr3I03JkDK5VghmVz3vMwFWOdarMvT_sXtb7MGyFfeTa9jPXDdDvOV8rD7UhmNsg=="
-org = "97a897b1d7c9ba9d"
-url = "http://192.168.100.42:8086"
+# bucket = "test1"
+# token = "lAylyIEo7Xjub7kr2I0GV5kr3I03JkDK5VghmVz3vMwFWOdarMvT_sXtb7MGyFfeTa9jPXDdDvOV8rD7UhmNsg=="
+# org = "97a897b1d7c9ba9d"
+# url = "http://192.168.100.42:8086"
 
 # Tắt TF_DELEGATE_OPTIONS nếu không cần thiết
 os.environ["TF_DELEGATE_OPTIONS"] = "0"
@@ -43,7 +43,7 @@ def load_options(file_path):
         logger.error(f"Error loading options: {e}")
         return {}
     
-def open_camera(camera_id):
+def open_camera(camera_id, url, token, org, bucket):
     try:
         client = InfluxDBClient(url=url, token=token, org=org)
         write_api = client.write_api(write_options=SYNCHRONOUS)
@@ -76,14 +76,15 @@ def open_camera(camera_id):
                 logging.info("Connected! Landmarks detected.")
 
                 for idx, landmark in enumerate(results.pose_landmarks.landmark):
-                    x, y, z = landmark.x, landmark.y, landmark.z  # Tọa độ chuẩn hóa
-                    logging.info(f"Landmark {idx}: x={x:.3f}, y={y:.3f}, z={z:.3f}")
+                    x, y, z, visibility = landmark.x, landmark.y, landmark.z, landmark.visibility  # Tọa độ chuẩn hóa
+                    logging.info(f"Landmark {idx}: x ={x:.3f}, y={y:.3f}, z={z:.3f}, visibility={visibility:3f}")
 
                     # Tạo dữ liệu Point cho từng landmark
                     point = Point("points") \
                         .field(f"x{idx}", x) \
                         .field(f"y{idx}", y) \
                         .field(f"z{idx}", z) \
+                        .field(f"visibility{idx}", visibility) \
                         .time(time=None, write_precision=WritePrecision.NS)
                     
                     if client:
@@ -95,7 +96,7 @@ def open_camera(camera_id):
                     # print("day la point: \n")
                     # print(point)
 
-            sleep(7)
+            sleep(2)
     except Exception as e:
         logging.error(f"Lỗi xảy ra: {e}")
     finally:
@@ -109,6 +110,11 @@ def open_camera(camera_id):
 def main():
     options_path = "/data/options.json"  # Đường dẫn đến tệp options.json
     options = load_options(options_path)
+
+    bucket = options.get("my_bucket")
+    token = options.get("my_token")
+    org = options.get("my_org")
+    url = options.get("my_url")
 
     camera_id = options.get("my_camera")
     if camera_id is None:
@@ -124,9 +130,7 @@ def main():
     logger.info(f"Using camera ID: {camera_id}")
     print(type(camera_id))
     print("This is camera ID:", camera_id)
-    open_camera(camera_id)
-
-
+    open_camera(camera_id,url=url,token=token,org=org,bucket=bucket)
 
 
 if __name__ == "__main__":
