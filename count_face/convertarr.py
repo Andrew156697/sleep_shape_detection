@@ -11,8 +11,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Cấu hình kết nối InfluxDB
-bucket = "test2"
-token = "fCtJij8tgs27OpTf9ZiJDiu7EtPxwRthAvfHDIxqLoA4wsL0873Rq2y8N-Y2cyvtcM9KFdYQb2zrLrcK9H1mGA=="
+bucket = "test1"
+token = "tCt6ozcIw7rhpxiBOLhx-PZfFtb_Usbr-6rXie3YXzzX2tz7fMwdSeNav2wByE6_CFSNF0gaShWLvx5KYYJu-Q=="
 org = "97a897b1d7c9ba9d"
 url = "http://192.168.100.42:8086/"
 

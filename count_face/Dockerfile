@@ -5,7 +5,6 @@ RUN pip install opencv-python-headless
 RUN pip install mediapipe
 RUN pip install pandas
 RUN pip install openpyxl
-RUN pip install flask
 RUN pip3 install influxdb-client
 
 

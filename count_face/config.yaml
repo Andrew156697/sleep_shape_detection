@@ -1,0 +1,59 @@
+
+name: "Sleeping Position"
+description: "Sleeping Position"
+version: "1.1.0"
+slug: "sleeping_position"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+
+
+options:
+  my_camera: none
+  my_token: 
+    description: "Your Tocken"
+    type: str
+    required: true
+    example: "RV_G0qv6j_IuGbL_ITsG_mRkWZZz6dFIqFI76XExtftLAOIKh1AOqgsKMj1vhWxr2czFf"
+  my_bucket: 
+    description: "Your Bucket name"
+    type: str
+    required: true
+    example: "test1"
+  my_org: 
+    description: "Your org"
+    type: str
+    required: true
+    example: "59f6f678313bf9b1"
+  my_url:
+    description: "Your URL"
+    type: str
+    required: true
+    example: "https://us-east-1-1.aws.cloud2.influxdata.com"
+  my_duration:
+    description: "minutes unit"
+    type: str
+    required: true
+    example: "1"
+
+schema:
+  my_camera: list(0|1|2|3|4|5|6|7|8|9|10)
+  my_token: str
+  my_bucket: str
+  my_org: str
+  my_url: str
+  my_duration: int
+
+
+devices:
+  - "/dev/video0:/dev/video0:rwm"
+  - "/dev/video1:/dev/video1:rwm"
+  - "/dev/video2:/dev/video2:rwm"
+  - "/dev/video3:/dev/video3:rwm"
+startup: services
+ports:
+  8000/tcp: 3000
